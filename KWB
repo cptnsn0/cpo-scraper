@@ -1,0 +1,58 @@
+using HtmlAgilityPack;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CPOSurvey1
+{
+    public class Scraper
+    {
+        public void ScrapeArticles()
+        {
+            String[] strArray = new String[] {
+"https://www.kearney.com/procurement-and-sourcing/article/?/a/the-power-of-third-party-economics",
+"https://www.camelot-mc.com/place-strategy-and-people-first-to-boost-your-digital-transformation-journey/",
+"https://www2.deloitte.com/us/en/insights/topics/operations/chief-procurement-officer-cpo-survey.html",
+"https://www.forrester.com/blogs/three-seismic-shifts-in-buying-behavior-from-forresters-2021-b2b-buying-survey/",
+"https://www.gep.com/research-reports/digital-transformation-takes-center-stage",
+"https://www.bain.com/insights/supplier-diversity-how-to-overcome-four-key-obstacles/",
+"https://www.bcg.com/publications/2020/changing-role-of-the-procurement-organization-infographic",
+"https://spendmatters.com/2021/07/22/not-just-a-ship-for-stormy-seas-realizing-the-value-of-procurement-beyond-the-pandemic/",
+"https://www.ey.com/en_us/supply-chain/reimagining-the-role-of-procurement-to-accelerate-the-next-and-beyond",
+"https://www.mckinsey.com/business-functions/operations/our-insights/now-is-the-time-for-procurement-to-lead-value-capture",
+};
+            foreach (string URL in strArray)
+            {
+                HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(URL);
+                myRequest.Method = "GET";
+                WebResponse myResponse = myRequest.GetResponse();
+                StreamReader sr = new StreamReader(myResponse.GetResponseStream(),
+                    System.Text.Encoding.UTF8);
+                HtmlDocument document = new HtmlDocument();
+                document.Load(sr);
+                HtmlNodeCollection h1Nodes = document.DocumentNode.SelectNodes("//h1");
+                var xpath = "//*[self::h1 or self::h2 or self::h3 or self::h4]";
+                foreach (var node in document.DocumentNode.SelectNodes(xpath))
+                {
+                    Console.WriteLine(node.InnerText);
+
+                }
+                HtmlNodeCollection bNodes = document.DocumentNode.SelectNodes("//b");
+                if (bNodes != null)
+                {
+                    foreach (var b in bNodes)
+                    {
+                        Console.WriteLine(b.InnerText);
+                    }
+                }
+
+                string result = sr.ReadToEnd();
+                sr.Close();
+                myResponse.Close();
+            }
+        }
+    }
+}
